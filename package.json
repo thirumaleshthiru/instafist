@@ -1,14 +1,17 @@
 {
-  "main": "app.js",
-  "scripts": {
-    "start": "node app.js"
-  },
-  "dependencies": {
-    "@sasmeee/igdl": "github:sasmeee/igdl",
-    "body-parser": "^1.20.2",
-    "cheerio": "^1.0.0-rc.12",
-    "cors": "^2.8.5",
-    "express": "^4.18.2",
-     "async-ratelimiter": "^1.3.13"
+    "name": "instafist",
+    "version": "1.0.0",
+    "description": "Your project description",
+    "main": "app.js",
+    "scripts": {
+      "start": "node app.js"
+    },
+    "dependencies": {
+      "@sasmeee/igdl": "^1.0.0",
+      "async-ratelimiter": "^1.0.0",
+      "body-parser": "^1.19.0",
+      "cors": "^2.8.5",
+      "express": "^4.17.1"
+    }
   }
-}
+  
