@@ -2,7 +2,7 @@ const express = require("express");
 const instagramDl = require("@sasmeee/igdl");
 const bodyParser = require("body-parser");
 const cors = require('cors');
-const { Limiter } = require('async-ratelimiter'); // Correct import
+const Limiter = require('async-ratelimiter');
 
 const app = express();
 const port = 3000; // You can change the port as needed
