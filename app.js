@@ -51,7 +51,7 @@ const cors = require('cors');
 const Limiter = require('async-ratelimiter');
 
 const app = express();
-const port = 3000; // You can change the port as needed
+const port = process.env.PORT || 3000; // You can change the port as needed
 
 app.use(bodyParser.json());
 app.use(cors());
