@@ -13,6 +13,9 @@ app.use(cors());
 const limiter = rateLimit({
   windowMs: 3000, // 3 seconds
   max: 15, // limit each IP to 15 request per 3 seconds
+  keyGenerator: function (req) {
+    return req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+  }
 });
 
 app.get("/getInstagramData", limiter, async (req, res) => {
