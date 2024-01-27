@@ -11,8 +11,8 @@ app.use(bodyParser.json());
 app.use(cors());
 
 const limiter = rateLimit({
-  windowMs: 5000, // 5 seconds
-  max: 1, // limit each IP to 1 request per 5 seconds
+  windowMs: 3000, // 5 seconds
+  max: 5, // limit each IP to 1 request per 5 seconds
 });
 
 app.get("/getInstagramData", limiter, async (req, res) => {
