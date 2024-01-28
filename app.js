@@ -2,30 +2,41 @@ const express = require("express");
 const instagramDl = require("@sasmeee/igdl");
 const bodyParser = require("body-parser");
 const cors = require('cors');
-const Queue = require("bull");
+const rateLimit = require('express-rate-limit');
 
 const app = express();
 const port = 3000;
 
-const downloadQueue = new Queue("download-queue");
-
 app.use(bodyParser.json());
 app.use(cors());
 
-app.get("/getInstagramData", (req, res) => {
+const limiter = rateLimit({
+  windowMs: 3000, // 3 seconds
+  max: 15, // limit each IP to 15 request per 3 seconds
+  keyGenerator: function (req) {
+    return req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+  }
+});
+
+app.get("/getInstagramData", limiter, async (req, res) => {
   const url = req.query.url;
 
   if (!url) {
     return res.status(400).json({ error: "URL parameter is required" });
   }
 
-  downloadQueue.add("download-task", { url: url });
-  res.json({ message: "Request queued for processing" });
-});
+  try {
+    const data = await instagramDl(url);
 
-downloadQueue.process("download-task", async (job) => {
-  const data = await instagramDl(job.data.url);
-  // ... (process and store data)
+    if (!data || data.length === 0) {
+      return res.status(404).json({ error: "No data found for the provided URL" });
+    }
+
+    res.json(data);
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ error: "Something is Wrong" });
+  }
 });
 
 app.listen(port, () => {
