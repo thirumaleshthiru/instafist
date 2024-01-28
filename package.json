@@ -11,6 +11,6 @@
     "express": "^4.17.1",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
-    "semaphore-async": "^1.0.4"  // Add this dependency
+    "bull": "^4.7.5"  
   }
 }
