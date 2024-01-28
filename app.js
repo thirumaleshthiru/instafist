@@ -2,48 +2,30 @@ const express = require("express");
 const instagramDl = require("@sasmeee/igdl");
 const bodyParser = require("body-parser");
 const cors = require('cors');
-const Semaphore = require("semaphore-async");
+const Queue = require("bull");
 
 const app = express();
 const port = 3000;
 
-// Create a semaphore with a limit of 1 per IP address
-const semaphores = new Map();
+const downloadQueue = new Queue("download-queue");
 
 app.use(bodyParser.json());
 app.use(cors());
 
-app.get("/getInstagramData", async (req, res) => {
-  const ip = req.ip;
-  const semaphore = semaphores.get(ip);
+app.get("/getInstagramData", (req, res) => {
+  const url = req.query.url;
 
-  if (!semaphore) {
-    semaphore = new Semaphore(1);
-    semaphores.set(ip, semaphore);
+  if (!url) {
+    return res.status(400).json({ error: "URL parameter is required" });
   }
 
-  try {
-    await semaphore.acquire();
+  downloadQueue.add("download-task", { url: url });
+  res.json({ message: "Request queued for processing" });
+});
 
-    const url = req.query.url;
-
-    if (!url) {
-      return res.status(400).json({ error: "URL parameter is required" });
-    }
-
-    const data = await instagramDl(url);
-
-    if (!data || data.length === 0) {
-      return res.status(404).json({ error: "No data found for the provided URL" });
-    }
-
-    res.json(data);
-  } catch (error) {
-    console.error("Error:", error);
-    res.status(500).json({ error: "Something is Wrong" });
-  } finally {
-    semaphore.release();
-  }
+downloadQueue.process("download-task", async (job) => {
+  const data = await instagramDl(job.data.url);
+  // ... (process and store data)
 });
 
 app.listen(port, () => {
