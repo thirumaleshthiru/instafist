@@ -2,7 +2,6 @@ const express = require("express");
 const instagramDl = require("@sasmeee/igdl");
 const bodyParser = require("body-parser");
 const cors = require('cors');
-const rateLimit = require('express-rate-limit');
 
 const app = express();
 const port = 3000;
@@ -10,15 +9,17 @@ const port = 3000;
 app.use(bodyParser.json());
 app.use(cors());
 
-const limiter = rateLimit({
-  windowMs: 3000, // 3 seconds
-  max: 15, // limit each IP to 15 request per 3 seconds
-  keyGenerator: function (req) {
-    return req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-  }
-});
+// Commented out the rate limit middleware
+// const limiter = rateLimit({
+//   windowMs: 3000, // 3 seconds
+//   max: 15, // limit each IP to 15 requests per 3 seconds
+//   keyGenerator: function (req) {
+//     return req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+//   }
+// });
 
-app.get("/getInstagramData", limiter, async (req, res) => {
+// Removed the limiter middleware from the route
+app.get("/getInstagramData", /*limiter,*/ async (req, res) => {
   const url = req.query.url;
 
   if (!url) {
